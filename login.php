@@ -1,58 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login Page</title>
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+<?php
+// Database connection parameters
+$servername = "localhost";
+$username = "root";
+$password = "";
+$database = "login_database";
 
-<div class="container">
-  <div class="row justify-content-center login-container">
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-header">
-          Login
-        </div>
-        <div class="card-body">
-          <form>
-            <div class="form-group">
-              <label for="username">Username</label>
-              <input type="text" class="form-control" id="username" placeholder="Enter username">
-            </div>
-            <div class="form-group">
-              <label for="password">Password</label>
-              <input type="password" class="form-control" id="password" placeholder="Password">
-            </div>
-            <div class="form-group">
-              <label class="d-block">Login as:</label>
-              <div class="form-check form-check-inline">
-                <input type="radio" class="form-check-input small-radio" id="employeeRadio" name="loginType" value="employee">
-                <label class="form-check-label small-radio" for="employeeRadio">Employee</label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input type="radio" class="form-check-input small-radio" id="customerRadio" name="loginType" value="customer">
-                <label class="form-check-label small-radio" for="customerRadio">Customer</label>
-              </div>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Login</button>
-            <div class="text-center mt-3">
-              <a href="#" class="small-link">Create New Account</a> | <a href="#" class="small-link">Forgot Password?</a>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+// Create connection
+$conn = new mysqli($servername, $username, $password, $database);
 
-<!-- Bootstrap JS and dependencies -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Function to authenticate user
+function authenticateUser($username, $password, $usertype, $conn) {
+    // Sanitize input
+    $username = $conn->real_escape_string($username);
+    $password = $conn->real_escape_string($password);
+    $usertype = $conn->real_escape_string($usertype);
+    
+    // Prepare SQL statement with prepared statement
+    $sql = "SELECT * FROM users WHERE username=? AND password=? AND usertype=?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sss", $username, $password, $usertype);
+    
+    // Execute SQL statement
+    $stmt->execute();
+    
+    // Check if user exists
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        return true; // User authenticated successfully
+    } else {
+        return false; // Authentication failed
+    }
+}
+
+// Check if form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get form data
+    $username = $_POST["username"];
+    $password = $_POST["password"];
+    $usertype = $_POST["login_type"]; // Assuming the login type is passed as "login_type" parameter
+    
+    // Authenticate user
+    if (authenticateUser($username, $password, $usertype, $conn)) {
+        echo "Authentication successful!";
+    } else {
+        // Redirect back to login page with error message
+        header("Location: login.php?error=invalid_credentials");
+        exit;
+    }
+}
+
+// Close connection
+$conn->close();
+?>
