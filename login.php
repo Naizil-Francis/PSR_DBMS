@@ -21,7 +21,7 @@ function authenticateUser($username, $password, $usertype, $conn) {
     $usertype = $conn->real_escape_string($usertype);
     
     // Prepare SQL statement with prepared statement
-    $sql = "SELECT * FROM users WHERE username=? AND password=? AND usertype=?";
+    $sql = "SELECT * FROM credentials WHERE username=? AND password=? AND login_type=?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sss", $username, $password, $usertype);
     
@@ -46,11 +46,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // Authenticate user
     if (authenticateUser($username, $password, $usertype, $conn)) {
-        echo "Authentication successful!";
+        echo "<script>alert('Authentication successful!');</script>"; // JavaScript alert for successful authentication
+        echo "<script>window.location.href = 'usermain.php';</script>"; // Redirect to success page
     } else {
-        // Redirect back to login page with error message
-        header("Location: login.php?error=invalid_credentials");
-        exit;
+        echo "<script>alert('Invalid credentials. Please try again.');</script>"; // JavaScript alert for invalid credentials
+        echo "<script>window.location.href = 'index.php';
+              </script>";
     }
 }
 

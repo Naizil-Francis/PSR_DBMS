@@ -12,7 +12,6 @@ $conn = new mysqli($servername, $username, $password, $database);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-
 // Function to register user
 function registerUser($name, $aadhaar, $address, $ration_card, $phone, $email, $occupation, $username, $password, $conn) {
     // Sanitize input
@@ -35,13 +34,13 @@ function registerUser($name, $aadhaar, $address, $ration_card, $phone, $email, $
     $conn->begin_transaction();
 
     // Insert into users table
-    $sql_users = "INSERT INTO users (aadhaar, name, address, ration_card, phone, email, occupation)
-                  VALUES ('$aadhaar', '$name', '$address', '$ration_card', '$phone', '$email', '$occupation')";
+    $sql_users = "INSERT INTO user (name,aadhaar,cardno,occupation,contact,email,address)
+                  VALUES ('$name', '$aadhaar', '$ration_card', '$occupation', '$phone', '$email', '$address')";
     $result_users = $conn->query($sql_users);
 
     // Insert into credentials table
-    $sql_credentials = "INSERT INTO credentials (username, password, aadhaar)
-                        VALUES ('$username', '$password', '$aadhaar')";
+    $sql_credentials = "INSERT INTO credentials (username, password, aadhaar,login_type)
+                        VALUES ('$username', '$password', '$aadhaar','user')";
     $result_credentials = $conn->query($sql_credentials);
 
     // Commit transaction if both queries succeed, otherwise rollback
