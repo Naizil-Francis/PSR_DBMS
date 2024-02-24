@@ -95,7 +95,7 @@ $conn->close();
             </div>
             <button type="submit" class="btn btn-primary btn-block">Login</button>
             <div class="text-center mt-3">
-              <a href="na.php" class="small-link">Create New Account</a> | <a href="#" class="small-link">Forgot Password?</a>
+              <a href="choice.php" class="small-link">Create New Account</a> | <a href="#" class="small-link">Forgot Password?</a>
             </div>
           </form>
         </div>

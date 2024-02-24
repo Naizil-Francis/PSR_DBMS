@@ -40,18 +40,17 @@ function authenticateUser($username, $password, $usertype, $conn) {
 // Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get form data
-    $username = $_POST["username"];
+    $usernames = $_POST["username"];
     $password = $_POST["password"];
     $usertype = $_POST["login_type"]; // Assuming the login type is passed as "login_type" parameter
     
     // Authenticate user
-    if (authenticateUser($username, $password, $usertype, $conn)) {
-        echo "<script>alert('Authentication successful!');</script>"; // JavaScript alert for successful authentication
-        echo "<script>window.location.href = 'usermain.php';</script>"; // Redirect to success page
+    if (authenticateUser($usernames, $password, $usertype, $conn)) {
+        // Redirect to usermain.php with parameters
+        echo "<script>window.location.href = 'usermain.php?username=$usernames';</script>";
     } else {
         echo "<script>alert('Invalid credentials. Please try again.');</script>"; // JavaScript alert for invalid credentials
-        echo "<script>window.location.href = 'index.php';
-              </script>";
+        echo "<script>window.location.href = 'index.php';</script>";
     }
 }
 
